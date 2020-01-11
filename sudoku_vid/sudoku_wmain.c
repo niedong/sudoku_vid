@@ -10,9 +10,6 @@ typedef struct {
 	wchar_t **wargv;
 }Sudoku_arg;
 
-static const wchar_t Sudoku_usagestr[] =
-SUDOKU_DOC(L"Usage: sudoku_vid <load path> [store path] [-p | --print]");
-
 #define MIN_ARGCNT 2
 #define MAX_ARGCNT 4
 
@@ -20,12 +17,14 @@ SUDOKU_DOC(L"Usage: sudoku_vid <load path> [store path] [-p | --print]");
 
 static void Sudoku_usage(void)
 {
+	static const wchar_t Sudoku_usagestr[] =
+		SUDOKU_DOC(L"Usage: sudoku_vid <load path> [store path] [-p | --print]");
 	fwprintf(stderr, L"%ls\n", Sudoku_usagestr);
 }
 
 static void Sudoku_utime(double utime)
 {
-	wprintf(L"Finished. Used time: %e\n", utime);
+	wprintf(L"Used time: %e\n", utime);
 }
 
 static int Sudoku_proc(Sudoku_arg *args)

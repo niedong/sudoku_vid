@@ -6,4 +6,6 @@
 ./sudoku_vid ..\..\puzzle\hard\2 -p
 ./sudoku_vid ..\..\puzzle\veryhard\1 -p
 ./sudoku_vid ..\..\puzzle\veryhard\2 -p
+./sudoku_vid ..\..\puzzle\veryhard\3 -p
+./sudoku_vid ..\..\puzzle\veryhard\4 -p
 pause
