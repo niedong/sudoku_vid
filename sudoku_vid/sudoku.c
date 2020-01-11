@@ -152,7 +152,7 @@ double Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 	HANDLE handle = NULL;
 	CONSOLE_SCREEN_BUFFER_INFO buff_info;
 	CONSOLE_CURSOR_INFO cursor_info;
-	unsigned int step = 0;
+	unsigned long long step = 0;
 	if (print) {
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &buff_info);
@@ -269,6 +269,6 @@ double Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 		buff_info.dwCursorPosition.Y += SUDOKU_SIZE;
 		SetConsoleCursorPosition(handle, buff_info.dwCursorPosition);
 	}
-	wprintf(L"Finished. Used step: %u. ", step);
+	wprintf(L"Finished. Used step: %llu. ", step);
 	return USED_TIME();
 }
