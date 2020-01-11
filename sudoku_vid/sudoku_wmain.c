@@ -29,8 +29,10 @@ static void Sudoku_utime(double utime)
 
 static int Sudoku_proc(Sudoku_arg *args)
 {
-	if (Sudoku_wload(args->sudoku, args->wargv[1])) {
-		wprintf(L"Successfully load sudoku from '%ls'\n", args->wargv[1]);
+	Sudoku_t read = Sudoku_wload(args->sudoku, args->wargv[1]);
+	if (read != SUDOKU_LDFAIL) {
+		wprintf(L"Successfully load sudoku from '%ls'\nGiven number: %"SUDOKU_WIOFMT L"\n",
+			args->wargv[1], read);
 	}
 	else {
 		return 0;

@@ -59,10 +59,10 @@ static void Sudoku_strrf(Sudoku *sudoku)
 	sudoku->wstr[i * SUDOKU_SIZE * 2] = L'\0';
 }
 
-static bool Sudoku_istream(Sudoku *sudoku, FILE *const istream)
+static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istream)
 {
 	assert(istream != NULL);
-	Sudoku_t i, j, count = 0;
+	Sudoku_t i, j, count = 0, read = 0;
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX; j++) {
 			int fstatus = fscanf(istream, "%"SUDOKU_IOFMT, &sudoku->board[i][j]);
@@ -70,7 +70,7 @@ static bool Sudoku_istream(Sudoku *sudoku, FILE *const istream)
 				fwprintf(stderr, L"Early EOF. Expecting %"SUDOKU_WIOFMT
 					L" numbers. Load %"SUDOKU_WIOFMT
 					L" instead\n", SUDOKU_CELL, count);
-				return false;
+				return SUDOKU_LDFAIL;
 			}
 			Sudoku_t val = sudoku->board[i][j];
 			if ((val != SUDOKU_EMPTY) &&
@@ -83,35 +83,38 @@ static bool Sudoku_istream(Sudoku *sudoku, FILE *const istream)
 					L" column %"SUDOKU_WIOFMT L", value: %"SUDOKU_WIOFMT
 					L". Illegal sudoku\n",
 					INC(i), INC(j), val);
-				return false;
+				return SUDOKU_LDFAIL;
+			}
+			if (val != SUDOKU_EMPTY) {
+				read++;
 			}
 			count++;
 		}
 	}
 	Sudoku_strrf(sudoku);
-	return true;
+	return read;
 }
 
-bool Sudoku_load(Sudoku *sudoku, const char *path)
+Sudoku_t Sudoku_load(Sudoku *sudoku, const char *path)
 {
 	FILE *stream = fopen(path, "rb");
 	if (stream == NULL) {
 		perror(path);
-		return false;
+		return SUDOKU_LDFAIL;
 	}
-	int ret = Sudoku_istream(sudoku, stream);
+	Sudoku_t ret = Sudoku_istream(sudoku, stream);
 	fclose(stream);
 	return ret;
 }
 
-bool Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
+Sudoku_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
 {
 	FILE *stream = _wfopen(wpath, L"rb");
 	if (stream == NULL) {
 		_wperror(wpath);
-		return false;
+		return SUDOKU_LDFAIL;
 	}
-	int ret = Sudoku_istream(sudoku, stream);
+	Sudoku_t ret = Sudoku_istream(sudoku, stream);
 	fclose(stream);
 	return ret;
 }
