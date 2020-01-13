@@ -47,10 +47,12 @@ SUDOKU_API(Sudoku_t) Sudoku_load(Sudoku *sudoku, const char *path);
 SUDOKU_API(Sudoku_t) Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath);
 
 /*
- * print: whether visualize the result
- * rev: false: start from 1
- *      true:  start from 9
+ * @print: whether visualize the result
+ * @rev: false: start from 1
+ *       true:  start from 9
+ *
+ * Return true on success, false on failure
  */
-SUDOKU_API(double) Sudoku_solve(Sudoku *sudoku, bool print, bool rev);
+SUDOKU_API(bool) Sudoku_solve(Sudoku *sudoku, bool print, bool rev);
 
 #endif /* !SUDOKU_H */

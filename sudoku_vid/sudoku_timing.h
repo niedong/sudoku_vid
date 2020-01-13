@@ -2,11 +2,15 @@
 #define SUDOKU_TIMING_H
 
 /*
+ * High-precision timing based on Windows API
+ *
+ *
  * Example usage:
- *		TIMING_BEGIN();
- *		...Do something...
- *		Timing end();
- *		double used_time = USED_TIME();
+ *      TIMING_BEGIN();
+ *      ...Do something...
+ *      Timing end();
+ *      double used_time = USED_TIME();
+ *      ...Do something with 'used_time'...
  */
 
 #include <Windows.h>

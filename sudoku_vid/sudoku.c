@@ -10,10 +10,10 @@
 #define INC(val) ((val) + 1)
 #define DEC(val) ((val) - 1)
 
-static void Sudoku_ostream(Sudoku *sudoku, FILE *const ostream)
+static void Sudoku_ostream(Sudoku *sudoku, FILE *const ostrm)
 {
-	assert(ostream != NULL);
-	fwprintf(ostream, L"%ls", sudoku->wstr);
+	assert(ostrm != NULL);
+	fwprintf(ostrm, L"%ls", sudoku->wstr);
 }
 
 void Sudoku_print(Sudoku *sudoku)
@@ -23,25 +23,25 @@ void Sudoku_print(Sudoku *sudoku)
 
 bool Sudoku_store(Sudoku *sudoku, const char *path)
 {
-	FILE *stream = fopen(path, "wb");
-	if (stream == NULL) {
+	FILE *strm = fopen(path, "wb");
+	if (strm == NULL) {
 		perror(path);
 		return false;
 	}
-	Sudoku_ostream(sudoku, stream);
-	fclose(stream);
+	Sudoku_ostream(sudoku, strm);
+	fclose(strm);
 	return true;
 }
 
 bool Sudoku_wstore(Sudoku *sudoku, const wchar_t *wpath)
 {
-	FILE *stream = _wfopen(wpath, L"wb");
-	if (stream == NULL) {
+	FILE *strm = _wfopen(wpath, L"wb");
+	if (strm == NULL) {
 		_wperror(wpath);
 		return false;
 	}
-	Sudoku_ostream(sudoku, stream);
-	fclose(stream);
+	Sudoku_ostream(sudoku, strm);
+	fclose(strm);
 	return true;
 }
 
@@ -59,13 +59,13 @@ static void Sudoku_strrf(Sudoku *sudoku)
 	sudoku->wstr[i * SUDOKU_SIZE * 2] = L'\0';
 }
 
-static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istream)
+static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 {
-	assert(istream != NULL);
+	assert(istrm != NULL);
 	Sudoku_t i, j, count = 0, read = 0;
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX; j++) {
-			int fstatus = fscanf(istream, "%"SUDOKU_IOFMT, &sudoku->board[i][j]);
+			int fstatus = fscanf(istrm, "%"SUDOKU_IOFMT, &sudoku->board[i][j]);
 			if (fstatus == EOF) {
 				fwprintf(stderr, L"Early EOF. Expecting %"SUDOKU_WIOFMT
 					L" numbers. Load %"SUDOKU_WIOFMT
@@ -146,13 +146,13 @@ static void Sudoku_stepadd(Sudoku *sudoku, Sudoku_t i, Sudoku_t j)
 	++sudoku->cur_step;
 }
 
-double Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
+bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 {
 	Sudoku_t i, j;
 	HANDLE handle = NULL;
 	CONSOLE_SCREEN_BUFFER_INFO buff_info;
 	CONSOLE_CURSOR_INFO cursor_info;
-	unsigned long long step = 0;
+	long long step = 0;
 	if (print) {
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &buff_info);
@@ -269,6 +269,6 @@ double Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 		buff_info.dwCursorPosition.Y += SUDOKU_SIZE;
 		SetConsoleCursorPosition(handle, buff_info.dwCursorPosition);
 	}
-	wprintf(L"Finished. Used step: %llu. ", step);
-	return USED_TIME();
+	wprintf(L"Finished. Used step: %llu. Used time: %e\n", step, USED_TIME());
+	return true;
 }
