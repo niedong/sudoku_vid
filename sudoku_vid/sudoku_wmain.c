@@ -1,7 +1,3 @@
-#ifdef _MSC_VER
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -24,7 +20,7 @@ typedef struct {
 static CONSOLE_SCREEN_BUFFER_INFO Sudoku_buffinfo;
 
 /*
- * Handler when user press 'ctrl+c'. Cleanly exit the program
+ * Handler when user presses 'ctrl+c'. Cleanly exit the program
  */
 static void Sudoku_interupt_handler(int signal_code)
 {
