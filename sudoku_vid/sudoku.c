@@ -97,25 +97,25 @@ static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 
 Sudoku_t Sudoku_load(Sudoku *sudoku, const char *path)
 {
-	FILE *stream = fopen(path, "rb");
-	if (stream == NULL) {
+	FILE *strm = fopen(path, "rb");
+	if (strm == NULL) {
 		perror(path);
 		return SUDOKU_LDFAIL;
 	}
-	Sudoku_t ret = Sudoku_istream(sudoku, stream);
-	fclose(stream);
+	Sudoku_t ret = Sudoku_istream(sudoku, strm);
+	fclose(strm);
 	return ret;
 }
 
 Sudoku_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
 {
-	FILE *stream = _wfopen(wpath, L"rb");
-	if (stream == NULL) {
+	FILE *strm = _wfopen(wpath, L"rb");
+	if (strm == NULL) {
 		_wperror(wpath);
 		return SUDOKU_LDFAIL;
 	}
-	Sudoku_t ret = Sudoku_istream(sudoku, stream);
-	fclose(stream);
+	Sudoku_t ret = Sudoku_istream(sudoku, strm);
+	fclose(strm);
 	return ret;
 }
 

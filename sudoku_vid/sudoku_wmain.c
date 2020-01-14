@@ -42,7 +42,7 @@ static void Sudoku_interupt_handler(int signal_code)
 		CONSOLE_SCREEN_BUFFER_INFO buff_info;
 		GetConsoleScreenBufferInfo(handle, &buff_info);
 		buff_info.dwCursorPosition.X = 0;
-		buff_info.dwCursorPosition.Y = Sudoku_buffinfo.dwCursorPosition.Y + SUDOKU_SIZE;
+		buff_info.dwCursorPosition.Y = Sudoku_buffinfo.dwCursorPosition.Y + SUDOKU_SIZE + 1;
 		SetConsoleCursorPosition(handle, buff_info.dwCursorPosition);
 		fwprintf(stderr, L"KeyboardInterrupt\n");
 
@@ -59,19 +59,8 @@ static void Sudoku_interupt_handler(int signal_code)
 static void Sudoku_usage(void)
 {
 	static const wchar_t *Sudoku_usagewstr =
-		SUDOKU_DOC(L"Usage: sudoku_vid  [-h | --help] [<load path>[--print]]");
+		SUDOKU_DOC(L"Usage: sudoku_vid  [-h | --help] [<load path> [--print]]");
 	fwprintf(stderr, L"%ls\n", Sudoku_usagewstr);
-}
-
-static void Sudoku_helper(void)
-{
-	static const wchar_t *Sudoku_helpwstr =
-		SUDOKU_DOC(L"Copyright (c) 2020 niedong\n"
-			L"License under MIT License. For more information, visit "
-			L"'https://github.com/niedong/sudoku_vid/blob/master'\n\n"
-			L"'sudoku_vid' is a command-line program that aims to visualize "
-			L"the process of solving sudoku\n");
-	fwprintf(stderr, L"%ls\n", Sudoku_helpwstr);
 }
 
 static int Sudoku_proc(Sudoku_arg *args)
@@ -80,7 +69,6 @@ static int Sudoku_proc(Sudoku_arg *args)
 		(wcscmp(args->wargv[MIN_ARGCNT - 1], L"--help") == 0) ||
 		(wcscmp(args->wargv[MIN_ARGCNT - 1], L"-h") == 0))
 	{
-		Sudoku_helper();
 		Sudoku_usage();
 		return 0;
 	}
@@ -91,9 +79,9 @@ static int Sudoku_proc(Sudoku_arg *args)
 			load_path, read);
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &Sudoku_buffinfo);
+		signal(SIGINT, Sudoku_interupt_handler);
 	}
 	else {
-		Sudoku_usage();
 		return 0;
 	}
 	switch (args->argc) {
@@ -118,11 +106,15 @@ static int Sudoku_proc(Sudoku_arg *args)
 
 int Sudoku_wmain(int argc, wchar_t **wargv)
 {
-	if (argc < MIN_ARGCNT || argc > MAX_ARGCNT) {
+	if (argc == 1) {
 		Sudoku_usage();
 		return 0;
 	}
-	signal(SIGINT, Sudoku_interupt_handler);
+	if (argc > MAX_ARGCNT) {
+		fwprintf(stderr, L"Too many arguments\n");
+		Sudoku_usage();
+		return 0;
+	}
 	Sudoku sudoku = SUDOKU_INITIALIZER;
 	Sudoku_arg sudoku_arg = { &sudoku,argc,wargv };
 	return Sudoku_proc(&sudoku_arg);
