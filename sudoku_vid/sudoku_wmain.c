@@ -63,6 +63,14 @@ static void Sudoku_usage(void)
 	fwprintf(stderr, L"%ls\n", Sudoku_usagewstr);
 }
 
+static void Split_line(void)
+{
+	wchar_t split[SUDOKU_SIZE * 2];
+	wmemset(split, L'-', SUDOKU_SIZE * 2 - 1);
+	split[SUDOKU_SIZE * 2 - 1] = L'\0';
+	wprintf(L"%ls\n", split);
+}
+
 static int Sudoku_proc(Sudoku_arg *args)
 {
 	if (args->argc == MIN_ARGCNT &&
@@ -75,8 +83,11 @@ static int Sudoku_proc(Sudoku_arg *args)
 	wchar_t *load_path = args->wargv[1];
 	Sudoku_t read = Sudoku_wload(args->sudoku, load_path);
 	if (read != SUDOKU_LDFAIL) {
-		wprintf(L"Successfully load sudoku from '%ls'\nGiven number: %"SUDOKU_WIOFMT L"\n",
+		wprintf(L"Successfully load sudoku from '%ls'\nGiven number: %"SUDOKU_WIOFMT L"\n"
+			L"Original:\n",
 			load_path, read);
+		Sudoku_print(args->sudoku);
+		Split_line();
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &Sudoku_buffinfo);
 		signal(SIGINT, Sudoku_interupt_handler);

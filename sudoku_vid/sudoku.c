@@ -50,10 +50,12 @@ static void Sudoku_strrf(Sudoku *sudoku)
 	Sudoku_t i, j;
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX - 1; j++) {
-			sudoku->wstr[SUDOKU_WSTRCH(i, j)] = sudoku->board[i][j] + L'0';
+			sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
+				sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' : sudoku->board[i][j] + L'0';
 			sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L' ';
 		}
-		sudoku->wstr[SUDOKU_WSTRCH(i, j)] = sudoku->board[i][j] + L'0';
+		sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
+			sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' : sudoku->board[i][j] + L'0';
 		sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L'\n';
 	}
 	sudoku->wstr[i * SUDOKU_SIZE * 2] = L'\0';
@@ -221,7 +223,7 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 					/* We got stuck at previous step. Keep going back. */
 					STAT_RESTORE(&sudoku->stat, i, j, prev_val);
 					sudoku->board[i][j] = SUDOKU_EMPTY;
-					sudoku->wstr[SUDOKU_WSTRCH(i, j)] = SUDOKU_EMPTY + L'0';
+					sudoku->wstr[SUDOKU_WSTRCH(i, j)] = L' ';
 					goto label_prevstep;
 				}
 				else {
