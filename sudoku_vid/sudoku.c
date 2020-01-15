@@ -29,30 +29,6 @@ void Sudoku_print(Sudoku *sudoku)
 	Sudoku_ostream(sudoku, stdout);
 }
 
-bool Sudoku_store(Sudoku *sudoku, const char *path)
-{
-	FILE *strm = fopen(path, "wb");
-	if (strm == NULL) {
-		perror(path);
-		return false;
-	}
-	Sudoku_ostream(sudoku, strm);
-	fclose(strm);
-	return true;
-}
-
-bool Sudoku_wstore(Sudoku *sudoku, const wchar_t *wpath)
-{
-	FILE *strm = _wfopen(wpath, L"wb");
-	if (strm == NULL) {
-		_wperror(wpath);
-		return false;
-	}
-	Sudoku_ostream(sudoku, strm);
-	fclose(strm);
-	return true;
-}
-
 static void Sudoku_strrf(Sudoku *sudoku)
 {
 	Sudoku_t i, j;
@@ -103,18 +79,6 @@ static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 	}
 	Sudoku_strrf(sudoku);
 	return read;
-}
-
-Sudoku_t Sudoku_load(Sudoku *sudoku, const char *path)
-{
-	FILE *strm = fopen(path, "rb");
-	if (strm == NULL) {
-		perror(path);
-		return SUDOKU_LDFAIL;
-	}
-	Sudoku_t ret = Sudoku_istream(sudoku, strm);
-	fclose(strm);
-	return ret;
 }
 
 Sudoku_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
