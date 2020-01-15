@@ -1,6 +1,12 @@
-#ifndef SUDOKU_H
-#define SUDOKU_H
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
 
+#pragma once
 #include "sudoku_stat.h"
 #include "sudoku_step.h"
 
@@ -52,5 +58,3 @@ SUDOKU_API(Sudoku_t) Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath);
  *       true:  start from 9
  */
 SUDOKU_API(bool) Sudoku_solve(Sudoku *sudoku, bool print, bool rev);
-
-#endif /* !SUDOKU_H */

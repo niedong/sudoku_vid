@@ -1,6 +1,12 @@
-#ifndef SUDOKU_CONFIG_H
-#define SUDOKU_CONFIG_H
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
 
+#pragma once
 #include <stddef.h> /* For size_t */
 #include <wchar.h> /* For unicode support */
 #include <stdbool.h> /* For bool type */
@@ -50,5 +56,3 @@ typedef char Sudoku_t;
 
 /* Sudoku API macro */
 #define SUDOKU_API(T) T
-
-#endif /* !SUDOKU_CONFIG_H */

@@ -1,3 +1,11 @@
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
+
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif

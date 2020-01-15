@@ -1,6 +1,12 @@
-#ifndef SUDOKU_STAT_H
-#define SUDOKU_STAT_H
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
 
+#pragma once
 #include "sudoku_config.h"
 
 /*
@@ -57,5 +63,3 @@ typedef struct {
 /* Start from 0. */
 #define SUDOKU_BLK(i, j) \
 	(SUDOKU_BLKSTART(i) + SUDOKU_BLKSTART(j) / SUDOKU_BLKSIZE)
-
-#endif /* !SUDOKU_STAT_H */

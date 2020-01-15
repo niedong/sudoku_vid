@@ -1,5 +1,12 @@
-#ifndef SUDOKU_TIMING_H
-#define SUDOKU_TIMING_H
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
+
+#pragma once
 
 /*
  * High-precision timing based on Windows API
@@ -28,5 +35,3 @@
 /* Get used time. */
 #define USED_TIME() \
 	((double)(__end__.QuadPart - __start__.QuadPart) / (double)(__freq__.QuadPart))
-
-#endif /* !SUDOKU_TIMING_H */

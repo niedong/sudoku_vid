@@ -1,3 +1,11 @@
+/*
+ * Copyright(c) 2020 niedong
+ *
+ * License under MIT license. For more information, visit
+ *
+ * https://github.com/niedong/sudoku_vid/blob/master/LICENSE
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -11,7 +19,6 @@ typedef struct {
 	wchar_t **wargv;
 }Sudoku_arg;
 
-#define MIN_ARGCNT 2
 #define MAX_ARGCNT 3
 
 #define REVOP true
@@ -42,7 +49,7 @@ static void Sudoku_interupt_handler(int signal_code)
 		CONSOLE_SCREEN_BUFFER_INFO buff_info;
 		GetConsoleScreenBufferInfo(handle, &buff_info);
 		buff_info.dwCursorPosition.X = 0;
-		buff_info.dwCursorPosition.Y = Sudoku_buffinfo.dwCursorPosition.Y + SUDOKU_SIZE + 1;
+		buff_info.dwCursorPosition.Y = Sudoku_buffinfo.dwCursorPosition.Y + SUDOKU_SIZE;
 		SetConsoleCursorPosition(handle, buff_info.dwCursorPosition);
 		fwprintf(stderr, L"KeyboardInterrupt\n");
 
@@ -73,9 +80,9 @@ static void Split_line(void)
 
 static int Sudoku_proc(Sudoku_arg *args)
 {
-	if (args->argc == MIN_ARGCNT &&
-		(wcscmp(args->wargv[MIN_ARGCNT - 1], L"--help") == 0) ||
-		(wcscmp(args->wargv[MIN_ARGCNT - 1], L"-h") == 0))
+	if (args->argc == 2 &&
+		(wcscmp(args->wargv[1], L"--help") == 0) ||
+		(wcscmp(args->wargv[1], L"-h") == 0))
 	{
 		Sudoku_usage();
 		return 0;
@@ -118,7 +125,8 @@ static int Sudoku_proc(Sudoku_arg *args)
 int Sudoku_wmain(int argc, wchar_t **wargv)
 {
 	if (argc == 1) {
-		Sudoku_usage();
+		fwprintf(stderr, L"sudoku_vid: Missing load path\n\n"
+			L"Try 'sudoku_vid --help' for more information\n");
 		return 0;
 	}
 	if (argc > MAX_ARGCNT) {
