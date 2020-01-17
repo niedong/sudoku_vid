@@ -15,7 +15,7 @@
  * Example usage:
  *      TIMING_BEGIN();
  *      ...Do something...
- *      Timing end();
+ *      TIMING_END();
  *      double used_time = USED_TIME();
  *      ...Do something with 'used_time'...
  */

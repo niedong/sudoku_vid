@@ -126,7 +126,7 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 	HANDLE handle = NULL;
 	CONSOLE_SCREEN_BUFFER_INFO buff_info;
 	CONSOLE_CURSOR_INFO cursor_info;
-	long long step = 0;
+	unsigned long long step = 0;
 	if (print) {
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &buff_info);
