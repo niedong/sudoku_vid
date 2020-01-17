@@ -29,7 +29,7 @@ static CONSOLE_SCREEN_BUFFER_INFO Sudoku_buffinfo;
 /*
  * Handler when user presses 'ctrl+c'. Cleanly exit the program
  */
-static void Sudoku_interupt_handler(int signal_code)
+static void Sudoku_interrupt_handler(int signal_code)
 {
 	HANDLE handle;
 	switch (signal_code) {
@@ -97,7 +97,8 @@ static int Sudoku_proc(Sudoku_arg *args)
 		Split_line();
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &Sudoku_buffinfo);
-		signal(SIGINT, Sudoku_interupt_handler);
+		/* Set up signal handler only when successfully loaded sudoku */
+		signal(SIGINT, Sudoku_interrupt_handler);
 	}
 	else {
 		return 0;
