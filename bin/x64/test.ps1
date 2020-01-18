@@ -15,5 +15,6 @@
 ./sudoku_vid ..\..\puzzle\evil\5 --print
 ./sudoku_vid ..\..\puzzle\empty --print
 ./sudoku_vid ..\..\puzzle\unsolvable --print
-./sudoku_vid ..\..\puzzle\legend
+./sudoku_vid ..\..\puzzle\legend\1
+./sudoku_vid ..\..\puzzle\legend\2
 pause
