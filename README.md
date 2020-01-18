@@ -10,7 +10,7 @@ sudoku_vid是基于我的另一个项目[sudoku](https://github.com/niedong/sudo
 使用[Visual Studio](https://visualstudio.microsoft.com/zh-hans/) 2017或者更高版本打开sudoku_vid.sln
 
 ## 更新日志
-    2020/1/18 20:57 修复了数独无解的情况，同时在puzzle文件夹下有一个新的unsolvable(无解的)数独，并被添加进求解命令以供测试。
+    2020/1/18 20:57 修复了数独无解的情况，同时在puzzle文件夹下有一个新的unsolvable(无解的)数独，以供测试。
 
 ## License
 License under [MIT license](https://github.com/niedong/sudoku_vid/blob/master/LICENSE)
