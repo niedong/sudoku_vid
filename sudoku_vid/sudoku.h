@@ -18,6 +18,12 @@ typedef struct _Sudoku {
 	Sudoku_t cur_step;
 }Sudoku;
 
+typedef struct {
+	unsigned long long step;
+	double used_time;
+	bool solvable;
+}Sudoku_solve_t;
+
 #define SUDOKU_INITIALIZER \
 	{ { SUDOKU_EMPTY },{ 0 },{ 0 },{ 0 },0 }
 
@@ -39,4 +45,4 @@ SUDOKU_API(Sudoku_t) Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath);
  * @rev:   false: start from 1
  *         true:  start from 9
  */
-SUDOKU_API(bool) Sudoku_solve(Sudoku *sudoku, bool print, bool rev);
+SUDOKU_API(Sudoku_solve_t) Sudoku_solve(Sudoku *sudoku, bool print, bool rev);

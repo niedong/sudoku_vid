@@ -56,3 +56,9 @@ typedef char Sudoku_t;
 
 /* Sudoku API macro */
 #define SUDOKU_API(T) T
+
+/* Instruction that can't be reached */
+#define SUDOKU_UNREACHABLE() abort()
+
+/* No operation */
+#define SUDOKU_NOP() ((void)0)

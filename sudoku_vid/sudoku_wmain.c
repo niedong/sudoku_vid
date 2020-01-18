@@ -19,10 +19,8 @@ typedef struct {
 	wchar_t **wargv;
 }Sudoku_arg;
 
-#define MAX_ARGCNT 3
-
-#define REVOP true
-#define SUDOKU_UNREACHABLE() abort()
+#define SUDOKU_MAX_ARGCNT 3
+#define SUDOKU_REVOP true
 
 static CONSOLE_SCREEN_BUFFER_INFO Sudoku_buffinfo;
 
@@ -78,6 +76,21 @@ static void Split_line(void)
 	wprintf(L"%ls\n", split);
 }
 
+static bool Sudoku_solve_proc(Sudoku *sudoku, bool print, bool rev)
+{
+	Sudoku_solve_t result = Sudoku_solve(sudoku, print, rev);
+	if (result.solvable == false) {
+		wprintf(L"The sudoku is not solvable!\n");
+		return false;
+	}
+	wprintf(L"Finished. Used step: %llu. Used time: %e\n",
+		result.step, result.used_time);
+	if (print == false) {
+		Sudoku_print(sudoku);
+	}
+	return true;
+}
+
 static int Sudoku_proc(Sudoku_arg *args)
 {
 	if (args->argc == 2 &&
@@ -105,8 +118,7 @@ static int Sudoku_proc(Sudoku_arg *args)
 	}
 	switch (args->argc) {
 	case 2:
-		Sudoku_solve(args->sudoku, false, REVOP);
-		Sudoku_print(args->sudoku);
+		Sudoku_solve_proc(args->sudoku, false, SUDOKU_REVOP);
 		break;
 	case 3:
 		if (wcscmp(L"--print", args->wargv[2]) != 0) {
@@ -114,7 +126,7 @@ static int Sudoku_proc(Sudoku_arg *args)
 			Sudoku_usage();
 		}
 		else {
-			Sudoku_solve(args->sudoku, true, REVOP);
+			Sudoku_solve_proc(args->sudoku, true, SUDOKU_REVOP);
 		}
 		break;
 	default:
@@ -130,7 +142,7 @@ int Sudoku_wmain(int argc, wchar_t **wargv)
 			L"Try 'sudoku_vid --help' for more information\n");
 		return 0;
 	}
-	if (argc > MAX_ARGCNT) {
+	if (argc > SUDOKU_MAX_ARGCNT) {
 		fwprintf(stderr, L"Too many arguments\n");
 		Sudoku_usage();
 		return 0;

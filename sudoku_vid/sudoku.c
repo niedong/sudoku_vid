@@ -108,7 +108,7 @@ Sudoku_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
 
 #define STAT_RESTORE(stat, i, j, val) \
     do { \
-        assert(--((stat)->rowstat[i][DEC(val)]) == 0); \
+		assert(--((stat)->rowstat[i][DEC(val)]) == 0); \
 		assert(--((stat)->colstat[j][DEC(val)]) == 0); \
 		assert(--((stat)->blkstat[SUDOKU_BLK(i, j)][DEC(val)]) == 0); \
 	} while (0)
@@ -120,13 +120,45 @@ static void Sudoku_stepadd(Sudoku *sudoku, Sudoku_t i, Sudoku_t j)
 	++sudoku->cur_step;
 }
 
-bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
+static bool Sudoku_preslv(Sudoku *sudoku)
 {
 	Sudoku_t i, j;
+	for (i = 0; i < SUDOKU_MAX; i++) {
+		for (j = 0; j < SUDOKU_MAX; j++) {
+			if (sudoku->board[i][j] != SUDOKU_EMPTY) {
+				continue;
+			}
+			Sudoku_t chk = DEC(SUDOKU_MIN);
+			while (chk < SUDOKU_MAX) {
+				if (sudoku->stat.rowstat[i][chk] ||
+					sudoku->stat.colstat[j][chk] ||
+					sudoku->stat.blkstat[SUDOKU_BLK(i, j)][chk])
+				{
+					chk++;
+				}
+				else {
+					goto label_cellpass;
+				}
+			}
+			return false;
+		label_cellpass:
+			SUDOKU_NOP();
+		}
+	}
+	return true;
+}
+
+Sudoku_solve_t Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
+{
+	Sudoku_solve_t result = { 0,0,true };
+	bool solvable = Sudoku_preslv(sudoku);
+	if (solvable == false) {
+		result.solvable = false;
+		return result;
+	}
 	HANDLE handle = NULL;
 	CONSOLE_SCREEN_BUFFER_INFO buff_info;
 	CONSOLE_CURSOR_INFO cursor_info;
-	unsigned long long step = 0;
 	if (print) {
 		handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &buff_info);
@@ -134,6 +166,8 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 		cursor_info.bVisible = FALSE;
 		SetConsoleCursorInfo(handle, &cursor_info);
 	}
+	Sudoku_t i, j;
+	unsigned long long step_cnt = 0;
 	TIMING_BEGIN();
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX; j++) {
@@ -208,7 +242,7 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 					STAT_RESTORE(&sudoku->stat, i, j, prev_val);
 					sudoku->board[i][j] = start_val;
 					sudoku->wstr[SUDOKU_WSTRCH(i, j)] = start_val + L'0';
-					step++;
+					step_cnt++;
 					if (print) {
 						Sudoku_print(sudoku);
 					}
@@ -224,7 +258,7 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 				 */
 				sudoku->board[i][j] = val;
 				sudoku->wstr[SUDOKU_WSTRCH(i, j)] = val + L'0';
-				step++;
+				step_cnt++;
 				if (print) {
 					Sudoku_print(sudoku);
 				}
@@ -237,12 +271,13 @@ bool Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 		}
 	}
 	TIMING_END();
+	result.step = step_cnt;
+	result.used_time = USED_TIME();
 	if (print) {
 		cursor_info.bVisible = TRUE;
 		SetConsoleCursorInfo(handle, &cursor_info);
 		buff_info.dwCursorPosition.Y += SUDOKU_SIZE;
 		SetConsoleCursorPosition(handle, buff_info.dwCursorPosition);
 	}
-	wprintf(L"Finished. Used step: %llu. Used time: %e\n", step, USED_TIME());
-	return true;
+	return result;
 }
