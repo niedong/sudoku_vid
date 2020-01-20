@@ -1,5 +1,5 @@
 ## sudoku_vid
-命令行应用程序，自动解数独，目前只适用于Windows。
+命令行应用程序，自动解数独，目前只适用于Windows
 
 sudoku_vid是基于我的另一个项目[sudoku](https://github.com/niedong/sudoku)进行增删，修改的
 
