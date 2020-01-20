@@ -157,17 +157,19 @@ static int Sudoku_proc(Sudoku_arg *args)
 		break;
 	case 4:
 		SUDOKU_NOP();
+		bool print = false, rev = true;
 		int arg_start = 2;
 		while (arg_start < args->argc) {
 			wchar_t *op = args->wargv[arg_start];
-			if (wcscmp(L"--print", op) != 0 && wcscmp(L"--norev", op) != 0) {
-				fwprintf(stderr, L"Unknown option: %ls\n", op);
-				Sudoku_usage();
-				return 0;
+			if (wcscmp(L"--print", op) == 0) {
+				print = true;
+			}
+			else if (wcscmp(L"--norev", op) == 0) {
+				rev = false;
 			}
 			arg_start++;
 		}
-		Sudoku_solve_proc(args->sudoku, true, false);
+		Sudoku_solve_proc(args->sudoku, print, rev);
 		break;
 	default:
 		SUDOKU_UNREACHABLE();
