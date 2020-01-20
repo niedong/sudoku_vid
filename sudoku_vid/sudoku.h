@@ -58,7 +58,6 @@ SUDOKU_API(void) Sudoku_print(Sudoku *sudoku);
 
 /*
  * Load sudoku board from unicode-format "wpath".
- * Return SUDOKU_LDFAIL on failure.
  */
 SUDOKU_API(Sudoku_load_t) Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath);
 
