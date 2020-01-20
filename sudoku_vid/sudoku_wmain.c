@@ -167,6 +167,11 @@ static int Sudoku_proc(Sudoku_arg *args)
 			else if (wcscmp(L"--norev", op) == 0) {
 				rev = false;
 			}
+			else {
+				fwprintf(stderr, L"Unknown option: %ls\n", op);
+				Sudoku_usage();
+				return 0;
+			}
 			arg_start++;
 		}
 		Sudoku_solve_proc(args->sudoku, print, rev);
