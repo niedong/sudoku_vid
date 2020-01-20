@@ -132,7 +132,6 @@
     <ClInclude Include="sudoku_config.h" />
     <ClInclude Include="sudoku_wmain.h" />
     <ClInclude Include="sudoku_stat.h" />
-    <ClInclude Include="sudoku_step.h" />
     <ClInclude Include="sudoku_timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

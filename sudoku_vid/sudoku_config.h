@@ -39,10 +39,10 @@ typedef char Sudoku_t;
 /* Sudoku I/O format. */
 #define SUDOKU_IOFMT "hhd"
 
-/* Sudoku unicode I/O format. */
-#define SUDOKU_WIOFMT L"hhd"
-
-/* Empty cell. */
+/*
+ * Empty cell.
+ * Do not modify this unless you know what you're doing
+ */
 #define SUDOKU_EMPTY 0
 
 /* Minimum number in sudoku. */
@@ -57,8 +57,6 @@ typedef char Sudoku_t;
 /* Sudoku API macro */
 #define SUDOKU_API(T) T
 
-/* Instruction that can't be reached */
-#define SUDOKU_UNREACHABLE() abort()
+#define INC(val) ((val) + 1)
 
-/* No operation */
-#define SUDOKU_NOP() ((void)0)
+#define DEC(val) ((val) - 1)

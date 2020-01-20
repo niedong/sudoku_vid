@@ -20,7 +20,11 @@ typedef struct {
 }Sudoku_arg;
 
 #define SUDOKU_MAX_ARGCNT 3
+
 #define SUDOKU_REVOP true
+
+/* Instruction that can't be reached */
+#define SUDOKU_UNREACHABLE() abort()
 
 static CONSOLE_SCREEN_BUFFER_INFO Sudoku_buffinfo;
 
@@ -101,19 +105,39 @@ static int Sudoku_proc(Sudoku_arg *args)
 		return 0;
 	}
 	wchar_t *load_path = args->wargv[1];
-	Sudoku_t read = Sudoku_wload(args->sudoku, load_path);
-	if (read != SUDOKU_LDFAIL) {
-		wprintf(L"Successfully load sudoku from '%ls'\nGiven number: %"SUDOKU_WIOFMT L"\n"
-			L"Original:\n",
-			load_path, read);
+	Sudoku_load_t result = Sudoku_wload(args->sudoku, load_path);
+	switch (result.error) {
+	case Sudoku_load_success:
+		wprintf(L"Successfully load sudoku from '%ls'\n"
+			L"Given number: %u\nOriginal:\n", load_path, result.read);
 		Sudoku_print(args->sudoku);
 		Split_line();
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		GetConsoleScreenBufferInfo(handle, &Sudoku_buffinfo);
 		/* Set up signal handler only when successfully loaded sudoku */
 		signal(SIGINT, Sudoku_interrupt_handler);
+		break;
+	case Sudoku_fopen_failure:
+		_wperror(load_path);
+		break;
+	case Sudoku_early_eof:
+		fwprintf(stderr, L"Early EOF: expecting %u numbers,"
+			L" load %u instead\n", SUDOKU_CELL, result.count);
+		break;
+	case Sudoku_invalid_value:
+		fwprintf(stderr, L"Invalid number: row: %u, column: %u, value: %u\n",
+			INC(result.i), INC(result.j), result.val);
+		break;
+	case Sudoku_illegal:
+		fwprintf(stderr, L"Illegal sudoku: row: %u, column: %u."
+			L" Multiple occurrences of %u\n",
+			INC(result.i), INC(result.j), result.val);
+		break;
+	default:
+		SUDOKU_UNREACHABLE();
 	}
-	else {
+	if (result.error != Sudoku_load_success) {
+		fwprintf(stderr, L"\nLoad sudoku from '%ls' failed\n", load_path);
 		return 0;
 	}
 	switch (args->argc) {

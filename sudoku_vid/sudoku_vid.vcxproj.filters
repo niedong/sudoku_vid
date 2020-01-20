@@ -35,9 +35,6 @@
     <ClInclude Include="sudoku_stat.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sudoku_step.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="sudoku_timing.h">
       <Filter>头文件</Filter>
     </ClInclude>

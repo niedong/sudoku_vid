@@ -34,4 +34,4 @@
 
 /* Get used time. */
 #define USED_TIME() \
-	((double)(__end__.QuadPart - __start__.QuadPart) / (double)(__freq__.QuadPart))
+    ((double)(__end__.QuadPart - __start__.QuadPart) / (double)(__freq__.QuadPart))

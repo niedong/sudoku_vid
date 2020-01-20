@@ -15,9 +15,6 @@
 #include "sudoku.h"
 #include "sudoku_timing.h"
 
-#define INC(val) ((val) + 1)
-#define DEC(val) ((val) - 1)
-
 static void Sudoku_ostream(Sudoku *sudoku, FILE *const ostrm)
 {
 	assert(ostrm != NULL);
@@ -33,64 +30,74 @@ static void Sudoku_strrf(Sudoku *sudoku)
 {
 	Sudoku_t i, j;
 	for (i = 0; i < SUDOKU_MAX; i++) {
-		for (j = 0; j < SUDOKU_MAX - 1; j++) {
+		for (j = 0; j < DEC(SUDOKU_MAX); j++) {
 			sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
-				sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' : sudoku->board[i][j] + L'0';
+				sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' :
+				sudoku->board[i][j] + L'0';
 			sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L' ';
 		}
 		sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
-			sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' : sudoku->board[i][j] + L'0';
+			sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' :
+			sudoku->board[i][j] + L'0';
 		sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L'\n';
 	}
 	sudoku->wstr[i * SUDOKU_SIZE * 2] = L'\0';
 }
 
-static Sudoku_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
+static Sudoku_load_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 {
 	assert(istrm != NULL);
-	Sudoku_t i, j, count = 0, read = 0;
+	Sudoku_t i, j, read = 0, count = 0;
+	Sudoku_load_t ret = { 0 };
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX; j++) {
 			int fstatus = fscanf(istrm, "%"SUDOKU_IOFMT, &sudoku->board[i][j]);
 			if (fstatus == EOF) {
-				fwprintf(stderr, L"Early EOF. Expecting %"SUDOKU_WIOFMT
-					L" numbers. Load %"SUDOKU_WIOFMT
-					L" instead\n", SUDOKU_CELL, count);
-				return SUDOKU_LDFAIL;
-			}
-			Sudoku_t val = sudoku->board[i][j];
-			if ((val != SUDOKU_EMPTY) &&
-				((val < SUDOKU_MIN || val > SUDOKU_MAX) ||
-				(++(sudoku->stat.rowstat[i][DEC(val)]) == 2) ||
-					(++(sudoku->stat.colstat[j][DEC(val)]) == 2) ||
-					(++(sudoku->stat.blkstat[SUDOKU_BLK(i, j)][DEC(val)]) == 2)))
-			{
-				fwprintf(stderr, L"An error occurred at row %"SUDOKU_WIOFMT
-					L" column %"SUDOKU_WIOFMT L", value: %"SUDOKU_WIOFMT
-					L". Illegal sudoku\n",
-					INC(i), INC(j), val);
-				return SUDOKU_LDFAIL;
-			}
-			if (val != SUDOKU_EMPTY) {
-				read++;
+				ret.error = Sudoku_early_eof;
+				ret.count = count;
+				return ret;
 			}
 			count++;
+			Sudoku_t val = sudoku->board[i][j];
+			if (val == SUDOKU_EMPTY) {
+				continue;
+			}
+			if (val < SUDOKU_MIN || val > SUDOKU_MAX) {
+				ret.error = Sudoku_invalid_value;
+			}
+			else if ((++(sudoku->stat.rowstat[i][DEC(val)]) == 2) ||
+				(++(sudoku->stat.colstat[j][DEC(val)]) == 2) ||
+				(++(sudoku->stat.blkstat[SUDOKU_BLK(i, j)][DEC(val)]) == 2))
+			{
+				ret.error = Sudoku_illegal;
+			}
+			else {
+				read++;
+				continue;
+			}
+			ret.i = i;
+			ret.j = j;
+			ret.val = val;
+			return ret;
 		}
 	}
+	ret.error = Sudoku_load_success;
+	ret.read = read;
 	Sudoku_strrf(sudoku);
-	return read;
+	return ret;
 }
 
-Sudoku_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
+Sudoku_load_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
 {
+	Sudoku_load_t result = { 0 };
 	FILE *strm = _wfopen(wpath, L"rb");
 	if (strm == NULL) {
-		_wperror(wpath);
-		return SUDOKU_LDFAIL;
+		result.error = Sudoku_fopen_failure;
+		return result;
 	}
-	Sudoku_t ret = Sudoku_istream(sudoku, strm);
+	result = Sudoku_istream(sudoku, strm);
 	fclose(strm);
-	return ret;
+	return result;
 }
 
 #define LOOP_FIND_PROPER(val, stat, i, j) \
@@ -128,21 +135,13 @@ static bool Sudoku_preslv(Sudoku *sudoku)
 			if (sudoku->board[i][j] != SUDOKU_EMPTY) {
 				continue;
 			}
-			Sudoku_t chk = DEC(SUDOKU_MIN);
-			while (chk < SUDOKU_MAX) {
-				if (sudoku->stat.rowstat[i][chk] ||
-					sudoku->stat.colstat[j][chk] ||
-					sudoku->stat.blkstat[SUDOKU_BLK(i, j)][chk])
-				{
-					chk++;
-				}
-				else {
-					goto label_cellpass;
-				}
+			Sudoku_t val = SUDOKU_MIN;
+			LOOP_FIND_PROPER(val, &sudoku->stat, i, j) {
+				val++;
 			}
-			return false;
-		label_cellpass:
-			SUDOKU_NOP();
+			if (val > SUDOKU_MAX || val < SUDOKU_MIN) {
+				return false;
+			}
 		}
 	}
 	return true;
@@ -202,15 +201,15 @@ Sudoku_solve_t Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 				 */
 				Sudoku_t start_val;
 			label_prevstep:
-				/*
-				 * This is critical. We are trying to find next
-				 * suitable number that can fill in its cell.
-				 */
 				assert(--sudoku->cur_step >= 0);
 				Sudoku_t prev_i = sudoku->step[sudoku->cur_step].i;
 				Sudoku_t prev_j = sudoku->step[sudoku->cur_step].j;
 				i = prev_i, j = prev_j;
 				Sudoku_t prev_val = sudoku->board[i][j];
+				/*
+				 * This is critical. We are trying to find next
+				 * suitable number that can fill in its cell.
+				 */
 				if (rev) {
 					start_val = DEC(prev_val);
 				}
