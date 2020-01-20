@@ -1,6 +1,8 @@
 ## sudoku_vid
 命令行应用程序，自动解数独，目前只适用于Windows
 
+[原视频](https://www.bilibili.com/video/av83677382/)
+
 sudoku_vid是基于我的另一个项目[sudoku](https://github.com/niedong/sudoku)进行增删，修改的
 
 ## 运行样例
@@ -14,7 +16,9 @@ sudoku_vid是基于我的另一个项目[sudoku](https://github.com/niedong/sudo
 
 2020/1/18 21:56 据说是[最难数独](https://tieba.baidu.com/p/4672599227)的"legend"难度可以在"puzzle"文件夹下找到，默认求解方式是不分步打印
 
-2020/1/20 13:45 代码布局，流程小优化
+2020/1/20 13:45 代码布局、流程小优化
+
+2020/1/20 17:51 代码布局、流程小优化。新增--norev选项
 
 ## License
 License under [MIT license](https://github.com/niedong/sudoku_vid/blob/master/LICENSE)
