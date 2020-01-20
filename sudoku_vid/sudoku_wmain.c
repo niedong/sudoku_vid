@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include "sudoku.h"
 #include "sudoku_wmain.h"
@@ -19,9 +20,7 @@ typedef struct {
 	wchar_t **wargv;
 }Sudoku_arg;
 
-#define SUDOKU_MAX_ARGCNT 3
-
-#define SUDOKU_REVOP true
+#define SUDOKU_MAX_ARGCNT 4
 
 /* Instruction that can't be reached */
 #define SUDOKU_UNREACHABLE() abort()
@@ -68,7 +67,7 @@ static void Sudoku_interrupt_handler(int signal_code)
 static void Sudoku_usage(void)
 {
 	static const wchar_t *Sudoku_usagewstr =
-		SUDOKU_DOC(L"Usage: sudoku_vid  [-h | --help] [<load path> [--print]]");
+		SUDOKU_DOC(L"Usage: sudoku_vid  [-h | --help] [<load path> [--print] [--norev]]");
 	fwprintf(stderr, L"%ls\n", Sudoku_usagewstr);
 }
 
@@ -106,7 +105,7 @@ static int Sudoku_proc(Sudoku_arg *args)
 	}
 	wchar_t *load_path = args->wargv[1];
 	Sudoku_load_t result = Sudoku_wload(args->sudoku, load_path);
-	switch (result.error) {
+	switch (result.code) {
 	case Sudoku_load_success:
 		wprintf(L"Successfully load sudoku from '%ls'\n"
 			L"Given number: %u\nOriginal:\n", load_path, result.read);
@@ -136,22 +135,39 @@ static int Sudoku_proc(Sudoku_arg *args)
 	default:
 		SUDOKU_UNREACHABLE();
 	}
-	if (result.error != Sudoku_load_success) {
+	if (result.code != Sudoku_load_success) {
 		fwprintf(stderr, L"\nLoad sudoku from '%ls' failed\n", load_path);
 		return 0;
 	}
 	switch (args->argc) {
 	case 2:
-		Sudoku_solve_proc(args->sudoku, false, SUDOKU_REVOP);
+		Sudoku_solve_proc(args->sudoku, false, true);
 		break;
 	case 3:
-		if (wcscmp(L"--print", args->wargv[2]) != 0) {
+		if (wcscmp(L"--print", args->wargv[2]) == 0) {
+			Sudoku_solve_proc(args->sudoku, true, true);
+		}
+		else if (wcscmp(L"--norev", args->wargv[2]) == 0) {
+			Sudoku_solve_proc(args->sudoku, false, false);
+		}
+		else {
 			fwprintf(stderr, L"Unknown option: %ls\n", args->wargv[2]);
 			Sudoku_usage();
 		}
-		else {
-			Sudoku_solve_proc(args->sudoku, true, SUDOKU_REVOP);
+		break;
+	case 4:
+		SUDOKU_NOP();
+		int arg_start = 2;
+		while (arg_start < args->argc) {
+			wchar_t *op = args->wargv[arg_start];
+			if (wcscmp(L"--print", op) != 0 && wcscmp(L"--norev", op) != 0) {
+				fwprintf(stderr, L"Unknown option: %ls\n", op);
+				Sudoku_usage();
+				return 0;
+			}
+			arg_start++;
 		}
+		Sudoku_solve_proc(args->sudoku, true, false);
 		break;
 	default:
 		SUDOKU_UNREACHABLE();

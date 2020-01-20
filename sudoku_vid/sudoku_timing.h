@@ -20,6 +20,7 @@
  *      ...Do something with 'used_time'...
  */
 
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 /* Begin timing. */

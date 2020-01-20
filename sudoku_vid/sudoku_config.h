@@ -60,3 +60,6 @@ typedef char Sudoku_t;
 #define INC(val) ((val) + 1)
 
 #define DEC(val) ((val) - 1)
+
+/* No operation */
+#define SUDOKU_NOP() ((void)0)

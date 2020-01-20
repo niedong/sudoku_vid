@@ -11,9 +11,10 @@
 #endif
 
 #include <stdio.h>
-#include <Windows.h>
 #include "sudoku.h"
 #include "sudoku_timing.h"
+
+#define SUDOKU_WCS(i, j) ((i) * SUDOKU_SIZE * 2 + (j) * 2)
 
 static void Sudoku_ostream(Sudoku *sudoku, FILE *const ostrm)
 {
@@ -31,15 +32,15 @@ static void Sudoku_strrf(Sudoku *sudoku)
 	Sudoku_t i, j;
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < DEC(SUDOKU_MAX); j++) {
-			sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
-				sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' :
-				sudoku->board[i][j] + L'0';
-			sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L' ';
+			sudoku->wstr[SUDOKU_WCS(i, j)] =
+				sudoku->board[i][j] == SUDOKU_EMPTY ?
+				L' ' : sudoku->board[i][j] + L'0';
+			sudoku->wstr[SUDOKU_WCS(i, j) + 1] = L' ';
 		}
-		sudoku->wstr[SUDOKU_WSTRCH(i, j)] =
-			sudoku->board[i][j] == SUDOKU_EMPTY ? L' ' :
-			sudoku->board[i][j] + L'0';
-		sudoku->wstr[SUDOKU_WSTRCH(i, j) + 1] = L'\n';
+		sudoku->wstr[SUDOKU_WCS(i, j)] =
+			sudoku->board[i][j] == SUDOKU_EMPTY ?
+			L' ' : sudoku->board[i][j] + L'0';
+		sudoku->wstr[SUDOKU_WCS(i, j) + 1] = L'\n';
 	}
 	sudoku->wstr[i * SUDOKU_SIZE * 2] = L'\0';
 }
@@ -47,32 +48,32 @@ static void Sudoku_strrf(Sudoku *sudoku)
 static Sudoku_load_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 {
 	assert(istrm != NULL);
-	Sudoku_t i, j, read = 0, count = 0;
+	Sudoku_t i, j, read_cnt = 0, cnt = 0;
 	Sudoku_load_t ret = { 0 };
 	for (i = 0; i < SUDOKU_MAX; i++) {
 		for (j = 0; j < SUDOKU_MAX; j++) {
 			int fstatus = fscanf(istrm, "%"SUDOKU_IOFMT, &sudoku->board[i][j]);
 			if (fstatus == EOF) {
-				ret.error = Sudoku_early_eof;
-				ret.count = count;
+				ret.code = Sudoku_early_eof;
+				ret.count = cnt;
 				return ret;
 			}
-			count++;
+			cnt++;
 			Sudoku_t val = sudoku->board[i][j];
 			if (val == SUDOKU_EMPTY) {
 				continue;
 			}
 			if (val < SUDOKU_MIN || val > SUDOKU_MAX) {
-				ret.error = Sudoku_invalid_value;
+				ret.code = Sudoku_invalid_value;
 			}
 			else if ((++(sudoku->stat.rowstat[i][DEC(val)]) == 2) ||
 				(++(sudoku->stat.colstat[j][DEC(val)]) == 2) ||
 				(++(sudoku->stat.blkstat[SUDOKU_BLK(i, j)][DEC(val)]) == 2))
 			{
-				ret.error = Sudoku_illegal;
+				ret.code = Sudoku_illegal;
 			}
 			else {
-				read++;
+				read_cnt++;
 				continue;
 			}
 			ret.i = i;
@@ -81,8 +82,8 @@ static Sudoku_load_t Sudoku_istream(Sudoku *sudoku, FILE *const istrm)
 			return ret;
 		}
 	}
-	ret.error = Sudoku_load_success;
-	ret.read = read;
+	ret.code = Sudoku_load_success;
+	ret.read = read_cnt;
 	Sudoku_strrf(sudoku);
 	return ret;
 }
@@ -92,7 +93,7 @@ Sudoku_load_t Sudoku_wload(Sudoku *sudoku, const wchar_t *wpath)
 	Sudoku_load_t result = { 0 };
 	FILE *strm = _wfopen(wpath, L"rb");
 	if (strm == NULL) {
-		result.error = Sudoku_fopen_failure;
+		result.code = Sudoku_fopen_failure;
 		return result;
 	}
 	result = Sudoku_istream(sudoku, strm);
@@ -139,7 +140,7 @@ static bool Sudoku_preslv(Sudoku *sudoku)
 			LOOP_FIND_PROPER(val, &sudoku->stat, i, j) {
 				val++;
 			}
-			if (val > SUDOKU_MAX || val < SUDOKU_MIN) {
+			if (val > SUDOKU_MAX) {
 				return false;
 			}
 		}
@@ -228,7 +229,7 @@ Sudoku_solve_t Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 					/* We got stuck at previous step. Keep going back. */
 					STAT_RESTORE(&sudoku->stat, i, j, prev_val);
 					sudoku->board[i][j] = SUDOKU_EMPTY;
-					sudoku->wstr[SUDOKU_WSTRCH(i, j)] = L' ';
+					sudoku->wstr[SUDOKU_WCS(i, j)] = L' ';
 					goto label_prevstep;
 				}
 				else {
@@ -240,7 +241,7 @@ Sudoku_solve_t Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 					 */
 					STAT_RESTORE(&sudoku->stat, i, j, prev_val);
 					sudoku->board[i][j] = start_val;
-					sudoku->wstr[SUDOKU_WSTRCH(i, j)] = start_val + L'0';
+					sudoku->wstr[SUDOKU_WCS(i, j)] = start_val + L'0';
 					step_cnt++;
 					if (print) {
 						Sudoku_print(sudoku);
@@ -256,7 +257,7 @@ Sudoku_solve_t Sudoku_solve(Sudoku *sudoku, bool print, bool rev)
 				 * sudoku status.
 				 */
 				sudoku->board[i][j] = val;
-				sudoku->wstr[SUDOKU_WSTRCH(i, j)] = val + L'0';
+				sudoku->wstr[SUDOKU_WCS(i, j)] = val + L'0';
 				step_cnt++;
 				if (print) {
 					Sudoku_print(sudoku);

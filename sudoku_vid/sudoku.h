@@ -15,7 +15,7 @@ typedef struct {
 
 typedef struct {
 	Sudoku_t board[SUDOKU_SIZE][SUDOKU_SIZE];
-	wchar_t wstr[SUDOKU_SIZE * SUDOKU_SIZE * 2 + 1];
+	wchar_t wstr[SUDOKU_CELL * 2 + 1];
 	Sudoku_stat stat;
 	Sudoku_step step[SUDOKU_CELL + 1];
 	Sudoku_t cur_step;
@@ -36,22 +36,20 @@ typedef enum {
 }Sudoku_error_t;
 
 typedef struct {
-	Sudoku_error_t error;
+	Sudoku_error_t code;
 	union {
 		Sudoku_t read;
 		Sudoku_t count;
 		struct {
-			Sudoku_t val;
 			Sudoku_t i;
 			Sudoku_t j;
+			Sudoku_t val;
 		};
 	};
 }Sudoku_load_t;
 
 #define SUDOKU_INITIALIZER \
 	{ { SUDOKU_EMPTY },{ 0 },{ 0 },{ 0 },0 }
-
-#define SUDOKU_WSTRCH(i, j) ((i) * SUDOKU_SIZE * 2 + (j) * 2)
 
 /* Print the board to the console. */
 SUDOKU_API(void) Sudoku_print(Sudoku *sudoku);
