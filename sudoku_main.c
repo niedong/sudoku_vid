@@ -165,8 +165,8 @@ static int Sudoku_proc(Sudoku_arg *args)
 int Sudoku_main(int argc, char **argv)
 {
 	if (argc == 1) {
-		fwprintf(stderr, L"sudoku_vid: Missing load path\n\n"
-			L"Try 'sudoku_vid --help' for more information\n");
+		fprintf(stderr, "sudoku_vid: Missing load path\n\n"
+			"Try 'sudoku_vid --help' for more information\n");
 		return 0;
 	}
 	if (argc == 2 &&
