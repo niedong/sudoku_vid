@@ -12,7 +12,7 @@ SudokuP1文件夹下是之前视频的脚本与数独，我将它们都保留了
 ## 更新日志
 2020/1/18 20:57 修复了数独无解的情况
 
-2020/1/31 14:37 为了让代码更清晰，删除了一些原来不必要的特性，你可以继续扩展下去。
+2020/1/31 14:37 为了让代码更清晰，删除了一些原来不必要的特性，你可以继续扩展下去
 
 ## License
 License under [MIT license](https://github.com/niedong/sudoku_vid/blob/master/LICENSE)
