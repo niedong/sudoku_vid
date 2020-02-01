@@ -12,6 +12,7 @@
 
 #include <stdio.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <string.h>
 #include "sudoku.h"
 
@@ -91,6 +92,17 @@ Sudoku_load_t Sudoku_load(Sudoku *sudoku, const char *path)
 	result = Sudoku_istream(sudoku, strm);
 	fclose(strm);
 	return result;
+}
+
+bool Sudoku_store(Sudoku *sudoku, const char *path)
+{
+	FILE *strm = fopen(path, "wb");
+	if (strm == NULL) {
+		return false;
+	}
+	Sudoku_ostream(sudoku, strm);
+	fclose(strm);
+	return true;
 }
 
 static void Sudoku_addstep(Sudoku_step *step, Sudoku_t i, Sudoku_t j,

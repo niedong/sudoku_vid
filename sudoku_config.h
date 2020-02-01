@@ -35,7 +35,11 @@
 /* The way to treat sudoku number. */
 typedef unsigned int Sudoku_t;
 
-#define SUDOKU_IOFMT "%u"
+#define TO_STRING(x) #x
+
+#define CONCAT(x, y) x ## y
+
+#define SUDOKU_IOFMT TO_STRING(%u)
 
 /*
  * Empty cell.
@@ -63,7 +67,3 @@ typedef unsigned int Sudoku_t;
 
 /* No operation */
 #define SUDOKU_NOP() ((void)0)
-
-#define TO_STRING(x) #x
-
-#define CONCAT(x, y) x ## y

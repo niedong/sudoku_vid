@@ -17,7 +17,6 @@
  *
  *
  * The three 2-dimensional array represent the sudoku status.
- * rowstat: Check if there are distinct numbers in each row.
  *
  *
  * e.g.

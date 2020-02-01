@@ -67,6 +67,8 @@ SUDOKU_API(void) Sudoku_print(Sudoku *sudoku);
 
 SUDOKU_API(Sudoku_load_t) Sudoku_load(Sudoku *sudoku, const char *path);
 
+SUDOKU_API(bool) Sudoku_store(Sudoku *sudoku, const char *path);
+
 SUDOKU_API(Sudoku_solve_t) Sudoku_solve(Sudoku *sudoku, Sudoku_solve_args *args);
 
 /* Sudoku_u128t printing macro */

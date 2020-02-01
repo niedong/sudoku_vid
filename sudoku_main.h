@@ -9,4 +9,4 @@
 #pragma once
 #include "sudoku_config.h"
 
-SUDOKU_API(int) Sudoku_main(int argc, char **wargv);
+SUDOKU_API(int) Sudoku_main(int argc, char **argv);
