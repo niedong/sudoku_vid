@@ -6,6 +6,8 @@
 
 [原视频传送门](https://www.bilibili.com/video/av83677382/)
 
+[P2传送门](https://www.bilibili.com/video/av86447603)
+
 ## 注意
 SudokuP1文件夹下是之前视频的脚本与数独，我将它们都保留了下来，不过它们只能在Windows下运行。想要看到运行样例的话，选择任意一个.ps1的[PowerShell](https://docs.microsoft.com/zh-cn/powershell/)脚本，右键，选择“使用PowerShell运行”
 
